@@ -1,0 +1,55 @@
+% Plot AC varies with time(frames)
+clc; clear all; close all;
+exp='TestExp/exp3';
+File=['J:/Granule/' exp '/ref/'];
+Located=['C:/Users/user/GoogleDrive/Exp/' exp '/Datanalysis/ACorre/'];
+load([File 'exp_parameter.mat'],'Exp_info');
+span=10;
+%% plot the AvgAC in one picture
+%{
+figure
+for w=1:length(wind)
+    windcolor=hsv2rgb([w*230/(360*length(wind)) 0.8 0.9]);
+    
+    load([File num2str(wind(w)) '/AvgAC.mat'],'AvgAC');
+    if w<=3
+        frame=(1:1:length(AvgAC))/30;
+        tempAvgAC=AvgAC(1:30:end);
+        tempframe=frame(1:30:end);
+    else
+        frame=(1:1:length(AvgAC))/3;
+        tempAvgAC=AvgAC(1:3:end);
+        tempframe=frame(1:3:end);
+    end
+    plot(tempframe,tempAvgAC,'Marker','.','MarkerSize',10,'LineStyle','none',...
+        'Color',windcolor)
+    hold on
+    
+end
+
+set(gca,'ylim',[0.5 0.95],'FontSize',20)
+hleg=legend('80','90','100','110','120');
+set(hleg,'Orientation','horizontal','Location','North','Box','off','FontSize',12);
+title('Angle Correlation','FontSize',24,'FontWeight','b');
+xlabel('time(s) ','FontSize',20);
+ylabel('value of correlation ','FontSize',20);
+saveas(gcf,[Located 'AC.fig']);
+print(gcf,'-dpng', '-r200', [Located 'AC.png']);
+%}
+%% plot one wind in one picture
+
+wind='215';
+load([File wind '/AvgAC.mat'],'AvgAC');
+frame=(1:1:length(AvgAC))/30;
+smAC=smooth(AvgAC,span);
+
+plot(frame,smAC,'-','Color',[0.15 0.6 0.3])
+set(gca,'xlim',[0 frame(end)],'ylim',[0.95 1.05],'FontSize',20);
+set(gca,')
+title(wind,'fontsize',24,'fontweight','b');
+xlabel('time(s) ','fontsize',20);
+ylabel('Angle Correlation ','fontsize',20);
+%saveas(gcf,[Located num2str(wind(w)) '.fig']);
+print(gcf,'-dpng', '-r200', [Located wind '.png']);
+
+

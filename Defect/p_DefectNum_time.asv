@@ -1,0 +1,26 @@
+% plot defect with time
+clc;clear all;close all;
+ExpName='monomer_exp11';
+File=['J:/Granule/' ExpName '/ref/'];
+Located=['C:/Users/user/GoogleDrive/Exp/' ExpName '/Datanalysis/defect/'];
+load([File 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+span=11;
+figure
+for iwind=1:length(wind)
+    load([File num2str(wind(iwind)) '/DefectNum.mat'],'th5','th7');
+    time=(1:length(th5))/30;
+    smth5=smooth(th5,span);
+    smth7=smooth(th7,span);
+    plot(time,smth5,'-','Color',[0.87 0.5 0]);
+    hold on
+    plot(time,smth7,'-','Color',[0 0.6 0]);
+    box on
+    legend('th5','th7','Location','NorthEast');
+    set(gca,'FontSize',20)
+    title( num2str(wind(iwind)),'fontsize',24,'fontweight','b');
+    xlabel('Time(s) ','fontsize',20);
+    ylabel('Numbers of Defect ','fontsize',20);
+    print(gcf,'-dpng', '-r200', [Located 'DefectNum' num2str(wind(iwind)) '.png']);
+    clf
+end

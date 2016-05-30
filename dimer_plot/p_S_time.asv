@@ -1,0 +1,50 @@
+clc; clear all; close all;
+ExpName='dimer_exp9';
+FilePath=['C:\Users\user\Dropbox\Exp\' ExpName '\'];
+load([FilePath 'ref\AvgDefect.mat'],'Exp_info');
+wind=[80:10:120];
+
+figure
+for iwind=1:length(wind)
+    windcolor=hsv2rgb([iwind*230/(360*length(wind)) 0.8 0.9]);
+    load([FilePath 'ref\' num2str(wind(iwind)) '\inf_orientation.mat'],'S');
+    if iwind<=3
+        time=(0:length(S)-1)/30;
+        tempS=S(1:10:end);
+        temptime=time(1:10:end);
+    else
+        time=(0:length(S)-1)/3;
+        tempS=S(1:10:end);
+    end
+    plot(temptime,tempS,'.','MarkerSize',10,'LineStyle','none','Color',windcolor)
+    hold on
+    
+end
+set(gca,'FontSize',20)
+hleg=legend('80','90','100','110','120');
+set(hleg,'Location','NorthEast','FontSize',12);
+xlabel('time(s) ','FontSize',20);
+ylabel('S ','FontSize',20);
+save([FilePath 'Datanalysis\S\S.fig']);
+print(gcf,'-dpng','-r100',[FilePath 'Datanalysis\S\S.png']);
+%}
+%{
+open([FilePath 'Datanalysis\S\S.fig'])
+hold on
+for iwind=4:5
+    load([FilePath 'ref\' num2str(wind(iwind)) '\inf_orientation.mat'],'S');
+    time=(0:length(S)-1)/3;
+    plot(time,S,'.','MarkerSize',10,'LineStyle','none')
+    hold on
+    clear time S
+end
+%}
+%{
+for iwind=1:length(wind)
+    load([FilePath 'ref/' num2str(wind(iwind)) '/inf_orientation.mat'],'S');
+    time=(0:length(S)-1)/30;
+    plot(S,time,'.','MarkerSize',10,'LineStyle','none');
+    print(gcf,'-dpng','-r100',[FilePath 'Datanalysis/S/' num2str(wind(iwind)) '.png']);
+    clf
+end
+%}

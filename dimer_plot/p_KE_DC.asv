@@ -1,0 +1,43 @@
+clc;clear all;close all;
+ExpName={'dimer_exp19'};
+% cell array
+VarableA={[0.9 1.05 1 0.85 1.1 1.2 1.15 1.15 1.15 1.25 1.25 1.2 1.25 1.25 1.25]};
+%VarableA={[2.1 12 12 6 20 29 28 48 52 53 58 58 65 78 80]};
+icolor=['m']; imarker=['+' '+'];
+wstart=[11]; % you can choose which wind you want satrt
+wend=[25];  % you can choose which wind you want end
+iMS=[8];
+%%
+%for iexp=1
+iexp=1;
+    Located=['C:\Users\user\GoogleDrive\Exp\' ExpName{iexp} '\Datanalysis\Fitting\'];
+    File = ['C:\Users\user\GoogleDrive\Exp\' ExpName{iexp} '\ref\'];
+    load([File 'exp_parameter.mat'],'Exp_info');
+    wind=Exp_info.wind;
+    KE=zeros(1,wend(iexp)-wstart(iexp)+1);
+    
+    %%
+    for iwind=wstart(iexp):wend(iexp)
+        load([File num2str(wind(iwind)) '/velocity.mat'],'MSV*');
+        KE(iwind-wstart(iexp)+1)=mean(MSVx+MSVy);
+    end
+    tempA=VarableA{iexp}(1:(wend(iexp)-wstart(iexp)+1));
+    plot(KE(1:2),tempA(1:2),'Marker',imarker(iexp),'Color',icolor,...
+        'LineStyle','none','MarkerSize',iMS(iexp),...
+        'LineWidth',2,'MarkerFaceColor',icolor);
+    hold on
+    plot(KE(3:15),tempA(3:15),'Marker',imarker(iexp),'Color',icolor(iexp),...
+        'LineStyle','none','MarkerSize',iMS(iexp),...
+        'LineWidth',2,'MarkerFaceColor',icolor(iexp));
+    hold on
+%end
+%lg=legend('stage2','stage3','Location','northwest');
+%set(lg,'Box','off')
+set(gcf,'Paperunits','centimeters','PaperPosition',[0 0 7 4.8]);
+set(gca,'FontSize',14)
+set(gca,'xlim',[0 250],'ylim',[0])
+xlabel('KE (mm/s)^2 ','FontSize',14);
+ylabel('\alpha','FontSize',14);
+print(gcf,'-dpng', '-r200', [Located 'alpha.png']);
+print(gcf,'-depsc','-tiff','-r300', [Located 'alpha.eps']);
+saveas(gcf, [Located 'alpha.fig'])

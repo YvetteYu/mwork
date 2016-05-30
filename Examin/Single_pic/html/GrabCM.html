@@ -1,0 +1,278 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>GrabCM</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2014-09-15"><meta name="m-file" content="GrabCM"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">crop image</a></li><li><a href="#2">image process</a></li><li><a href="#3">image process</a></li><li><a href="#4">calculate CM</a></li></ul></div><h2>crop image<a name="1"></a></h2><pre class="codeinput">clear <span class="string">all</span>; clc; close <span class="string">all</span>;
+ExpName=<span class="string">'dimer_exp3'</span>;
+Original=[ <span class="string">'/Users/missyvetteyu/Dropbox/Exp/'</span> ExpName <span class="string">'/pic/'</span>];
+Process=[<span class="string">'/Users/missyvetteyu/Dropbox/Exp/'</span> ExpName <span class="string">'/'</span>];
+load([<span class="string">'/Users/missyvetteyu/Dropbox/Exp/'</span> ExpName <span class="string">'/exp_parameter.mat'</span>]);
+wind=<span class="string">'19_2'</span>;
+frame=2081:2085;
+figure
+<span class="keyword">for</span> iframe=1:length(frame)
+</pre><h2>image process<a name="2"></a></h2><p>Using image process instead absorb color</p><pre class="codeinput"><span class="comment">%img=imread([Original imgname '/00001.png']);</span>
+img=imread([Original wind <span class="string">'/'</span> num2str(frame(iframe),<span class="string">'%05d'</span>) <span class="string">'.png'</span>]);
+
+tempimg=img(:,:,3)-0.5*img(:,:,1)-0.5*img(:,:,2);
+afterimg(:,:)=single(tempimg(:,:));
+r_mean=0;
+r_std=26;
+inputnum=100;
+clear <span class="string">tempimg</span>
+</pre><h2>image process<a name="3"></a></h2><p>threshold</p><pre class="codeinput">bw1=abs(afterimg(:,:)-r_mean)&gt;r_std;
+<span class="comment">%bw1=abs(bw1-1);</span>
+<span class="comment">% to erode and dilate</span>
+
+se=strel(<span class="string">'disk'</span>,1);
+bw0=imdilate(bw1 ,se);
+bw0=imdilate(bw1 ,se);
+<span class="comment">%bw0=imdilate(bw0 ,se);</span>
+<span class="comment">%bw0=imdilate(bw0 ,se);</span>
+<span class="comment">%bw0=imerode(bw0 ,se);</span>
+bw0=imerode(bw0 ,se);
+bw0=bw0.*roi;
+imshow(bw0);
+clear <span class="string">'r_*'</span> <span class="string">afterimg</span>
+print(gcf,<span class="string">'-dpng'</span>,<span class="string">'-r200'</span>,[Process <span class="string">'CM/temp/'</span> num2str(frame(iframe),<span class="string">'%05d'</span>) <span class="string">'bw.png'</span>]);
+clf
+figure
+</pre><img vspace="5" hspace="5" src="GrabCM_01.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_02.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_04.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_05.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_07.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_08.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_10.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_11.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_13.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_14.png" alt=""> <h2>calculate CM<a name="4"></a></h2><pre class="codeinput">[th1Labels,th1Pnumber]=bwlabel(bw0);
+<span class="keyword">for</span> k=1:th1Pnumber
+    piece=th1Labels==k;
+    <span class="comment">% piece is logical matrix, size is same as label</span>
+    area=sum(sum(piece));
+    <span class="keyword">if</span> area&lt;20
+        th1Labels(th1Labels==k)=0;
+
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput">bwlabels=th1Labels~=0;
+[th2Labels,th2Pnumber]=bwlabel(bwlabels);
+clear <span class="string">th1Labels</span> <span class="string">th1Pnumber</span> <span class="string">bw*</span> <span class="string">bwlabels</span>;
+
+X=zeros(1,th2Pnumber);
+Y=zeros(1,th2Pnumber);
+R=zeros(1,th2Pnumber);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% enter CM-loop to calculate CM position</span>
+<span class="comment">%--------------------------------------------------------------------------</span>
+</pre><pre class="codeinput">t=0;
+
+<span class="keyword">while</span> t&lt;th2Pnumber
+    t=t+1;
+    piece=th2Labels==t;
+    Xlimt=[1:length(th2Labels(1,:,1))]';
+    Ylimt=1:length(th2Labels(:,1,1));
+    total_mass=sum(sum(piece));
+    R(t)=sqrt((total_mass)/pi);
+    Y(t)=sum(sum(Ylimt*piece))/total_mass;
+    X(t)=sum(sum(piece*Xlimt))/total_mass;
+
+<span class="keyword">end</span>
+</pre><pre class="codeinput">extra=0;
+ n=1;
+    m=length(X);
+    <span class="keyword">while</span> m&gt;inputnum &amp; n==inputnum+1
+        Xtemp=X(n);
+        Ytemp=Y(n);
+        [distance]=mydistance(Xtemp,Ytemp,X,Y);
+        ind=find(distance~=0 &amp; distance&lt;25);
+        <span class="keyword">if</span> isempty(ind)==0
+            extra=extra+length(ind);
+            X(n)=(X(n)+sum(X(ind)))/(length(ind)+1);
+            X(ind)=[];
+            Y(ind)=[];
+        <span class="keyword">end</span>
+        m=length(X);
+        n=n+1;
+    <span class="keyword">end</span>
+    clear <span class="string">n</span> <span class="string">m</span> <span class="string">t</span>
+th2Pnumber=th2Pnumber-extra;
+imshow(img);hold <span class="string">on</span>
+<span class="keyword">for</span> t=1:th2Pnumber
+    plot(X(t),(Y(t)),<span class="string">'y*'</span>,<span class="string">'LineWidth'</span>,2);
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+
+print(gcf,<span class="string">'-dpng'</span>,<span class="string">'-r200'</span>,[Process <span class="string">'CM/temp/'</span> num2str(frame(iframe),<span class="string">'%05d'</span>) <span class="string">'after.png'</span>]);
+save([Process <span class="string">'CM/temp/'</span> num2str(frame(iframe),<span class="string">'%05d'</span>) <span class="string">'.mat'</span>],<span class="string">'X'</span>,<span class="string">'Y'</span>);
+clear <span class="string">X</span> <span class="string">Y</span> <span class="string">th2*</span> <span class="string">img</span>
+clf
+</pre><img vspace="5" hspace="5" src="GrabCM_03.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_06.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_09.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_12.png" alt=""> <img vspace="5" hspace="5" src="GrabCM_15.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
+##### SOURCE BEGIN #####
+%% crop image
+clear all; clc; close all;
+ExpName='dimer_exp3';
+Original=[ '/Users/missyvetteyu/Dropbox/Exp/' ExpName '/pic/'];
+Process=['/Users/missyvetteyu/Dropbox/Exp/' ExpName '/'];
+load(['/Users/missyvetteyu/Dropbox/Exp/' ExpName '/exp_parameter.mat']);
+wind='19_2';
+frame=2081:2085;
+figure
+for iframe=1:length(frame)
+%% image process
+% Using image process instead absorb color
+%img=imread([Original imgname '/00001.png']);
+img=imread([Original wind '/' num2str(frame(iframe),'%05d') '.png']);
+
+tempimg=img(:,:,3)-0.5*img(:,:,1)-0.5*img(:,:,2);
+afterimg(:,:)=single(tempimg(:,:));
+r_mean=0;
+r_std=26;
+inputnum=100;
+clear tempimg
+
+%% image process
+% threshold
+bw1=abs(afterimg(:,:)-r_mean)>r_std;
+%bw1=abs(bw1-1);
+% to erode and dilate
+
+se=strel('disk',1);
+bw0=imdilate(bw1 ,se);
+bw0=imdilate(bw1 ,se);
+%bw0=imdilate(bw0 ,se);
+%bw0=imdilate(bw0 ,se);
+%bw0=imerode(bw0 ,se);
+bw0=imerode(bw0 ,se);
+bw0=bw0.*roi;
+imshow(bw0);
+clear 'r_*' afterimg
+print(gcf,'-dpng','-r200',[Process 'CM/temp/' num2str(frame(iframe),'%05d') 'bw.png']);
+clf
+figure
+%% calculate CM
+[th1Labels,th1Pnumber]=bwlabel(bw0);
+for k=1:th1Pnumber
+    piece=th1Labels==k;
+    % piece is logical matrix, size is same as label
+    area=sum(sum(piece));
+    if area<20
+        th1Labels(th1Labels==k)=0;
+        
+    end
+end
+%%
+bwlabels=th1Labels~=0;
+[th2Labels,th2Pnumber]=bwlabel(bwlabels);
+clear th1Labels th1Pnumber bw* bwlabels;
+
+X=zeros(1,th2Pnumber);
+Y=zeros(1,th2Pnumber);
+R=zeros(1,th2Pnumber);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% enter CM-loop to calculate CM position
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%%
+t=0;
+
+while t<th2Pnumber
+    t=t+1;
+    piece=th2Labels==t;    
+    Xlimt=[1:length(th2Labels(1,:,1))]';
+    Ylimt=1:length(th2Labels(:,1,1));
+    total_mass=sum(sum(piece));
+    R(t)=sqrt((total_mass)/pi);
+    Y(t)=sum(sum(Ylimt*piece))/total_mass;
+    X(t)=sum(sum(piece*Xlimt))/total_mass;
+    
+end
+%%
+extra=0;
+ n=1;
+    m=length(X);
+    while m>inputnum & n==inputnum+1       
+        Xtemp=X(n);
+        Ytemp=Y(n);
+        [distance]=mydistance(Xtemp,Ytemp,X,Y);
+        ind=find(distance~=0 & distance<25);
+        if isempty(ind)==0
+            extra=extra+length(ind);
+            X(n)=(X(n)+sum(X(ind)))/(length(ind)+1);
+            X(ind)=[];
+            Y(ind)=[];
+        end
+        m=length(X);
+        n=n+1;
+    end
+    clear n m t
+th2Pnumber=th2Pnumber-extra;
+imshow(img);hold on
+for t=1:th2Pnumber
+    plot(X(t),(Y(t)),'y*','LineWidth',2);
+    hold on
+end
+
+print(gcf,'-dpng','-r200',[Process 'CM/temp/' num2str(frame(iframe),'%05d') 'after.png']);
+save([Process 'CM/temp/' num2str(frame(iframe),'%05d') '.mat'],'X','Y');
+clear X Y th2* img
+clf
+end
+
+##### SOURCE END #####
+--></body></html>

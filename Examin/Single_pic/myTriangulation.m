@@ -1,0 +1,40 @@
+% plot trigulations by using CM.txt
+function []=myTriangulation(X,Y,ImgFile,nowframe,framerate,pnumber,Located)
+
+Xindex=find(isnan(X)==1);
+Yindex=find(isnan(Y)==1);
+X(Xindex)=[];
+Y(Yindex)=[];
+X=X';
+Y=Y';
+img=imread([ImgFile]);
+figure('visible','off')
+imshow(img)
+hold on
+dt = DelaunayTri(X,Y);
+triplot(dt,'LineStyle','-','LineWidth',1,'Color',[0.5 0.1 0.5]);  
+hold on
+%time=sprintf('%2.3f',(nowframe-1)/framerate);
+
+%%
+%{
+for t=1:pnumber
+    check=dt.Triangulation(:,:,:) == t;
+    term=sum(sum(check));
+    if term==5
+        plot(X(t),Y(t),'o','MarkerSize',10,'MarkerFaceColor',[0.9 0.5 0],...
+            'MarkerEdgeColor',[0.9 0.5 0]);
+        hold on;
+    end
+    if term==7
+        plot(X(t),Y(t),'^','MarkerSize',10,'MarkerFaceColor',[0 0.5 0]...
+            ,'MarkerEdgeColor',[0 0.5 0]);
+        hold on;
+    end
+end
+%}
+set(gca,'YDir','reverse');
+%text(950,50,time);
+str=sprintf('%05d.png',nowframe);
+print(gcf,'-dpng','-r200',[Located 'trianglar_' str]);
+end

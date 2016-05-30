@@ -1,0 +1,27 @@
+clc;clear all;close all;
+ExpName='monomer_exp710';
+FilePath=['J:/Granule/' ExpName '/ref/'];
+Located=['C:/Users/user/Dropbox/Exp/' ExpName '/Datanalysis/Fai6/'];
+load([FilePath 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.Number;
+color=[0.2 0.2 0.8;0.8 0.2 0.2;0.2 0.8 0.2;0.5 0.5 0.6];
+%%
+for iwind=1:length(wind)
+    
+    load([FilePath num2str(wind(iwind)) '/Fai6.mat'],'FaiR');
+    AvgFaiR=mean(FaiR,2);
+    smFaiR=smooth(AvgFaiR,11);
+    clear AvgFaiR FaiR
+    time=(0:length(smFaiR)-1)/30;
+    plot(time,smFaiR,'Color',color(iwind,:),'LineWidth',1);   
+    hold on
+end
+legend('exp7','exp8','exp9','exp10');
+title('Inner Defect and AC ','fontsize',22);
+xlabel('time(s) ','fontsize',18);
+ylabel('Fai6 ','fontsize',18,'Color','k');
+saveas(gcf,[Located 'FAi.fig']);
+print(gcf,'-dpng', '-r200', [Located 'AC_Defect/' num2str(wind(iwind)) '.png']);
+
+
+

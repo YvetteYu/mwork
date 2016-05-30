@@ -1,0 +1,26 @@
+clc;clear all;close all
+ExpName='monomer_exp1';
+File='J:/Granule/';
+
+t=1;
+img=imread([File 'OriginalData/' ExpName '/pic/110/0000' num2str(t) '.png']);
+load([File ExpName '/exp_parameter.mat'],'Exp_info');
+imshow(img);hold on
+[px py]=ginput(4);
+ox=mean(px);oy=mean(py);    
+D1=mydistance(px(1),py(1),px(2),py(2));
+D2=mydistance(px(3),py(3),px(4),py(4));
+R=mean([D1 D2])/2;
+pause
+hl=imdistline(gca);
+pause;
+api=iptgetapi(hl);
+d=api.getDistance;
+scale=14/d;
+
+Exp_info.BCenter=[ox oy];
+Exp_info.BRadius=R;
+Exp_info.scale=scale;
+save([File ExpName '/exp_parameter.mat'],'Exp_info');
+clf;clear img
+

@@ -1,0 +1,16 @@
+clc;clear all;close all;
+ExpName='TestExp';
+File=['C:/Users/user/GoogleDrive/HexagonBoundary/' ExpName '/WindData/'];
+iYTick={[6.4 6.8 7.2];[6.4 6.8 7.2];[6.8 7.2 7.6 8];[7.2 7.6 8 8.2]};
+for iwind=1:4
+wind=textread([File 'exp' num2str(iwind) '.txt'],'%f');
+subplot(4,1,iwind)
+plot(wind)
+ha=gca;
+set(ha,'xlim',[0 length(wind)],'ylim',[min(wind) max(wind)])
+set(ha,'YTick',iYTick{1}(iwind,:));
+set(ha,'FontSize',12); box on;
+clear wind
+end
+xlabel('Time (s) ','fontsize',12);
+ylabel('Velocity (m/s) ','fontsize',12);

@@ -1,0 +1,38 @@
+clc;clear all;close all;
+ExpName='monomer_exp3';
+FilePath=['J:/Granule/' ExpName '/'];
+load([FilePath 'exp_parameter.mat'],'Exp_info');
+pnumber=Exp_info.Pnumber;
+wind=Exp_info.wind;
+for iwind=1:length(wind)
+    files=dir([FilePath 'triangular/TriAngle/' num2str(wind(iwind)) '/*.mat']);
+    Faicos=zeros(length(files),100);
+    Faisin=zeros(length(files),100);
+    FaiR=zeros(length(files),100);
+    
+    for iframe=1:length(files)
+        load([FilePath 'triangular/TriAngle/' num2str(wind(iwind)) '/' files(iframe).name],'triAng');
+        for ipar=1:pnumber
+            fai=nonzeros(triAng(ipar,:))'; 
+            theta=cumsum(fai); % cumsum=[X1]
+            cospart=cos(6*theta);
+            sinpart=sin(6*theta);
+            Faicos(iframe,ipar)=mean(cospart);
+            Faisin(iframe,ipar)=mean(sinpart);
+            FaiR(iframe,ipar)=sqrt(Faicos(iframe,ipar)^2+Faisin(iframe,ipar)^2);
+            clear fai theta *part
+        end
+    end
+    
+description=struct('variable1',...
+    ['[Faicos] is 100x(frame number) array. It recorded the real part of '...
+    'Fai6 of every particle in ench frame'],...
+    'variable2',...
+    ['[Faisin] is 100x(frame number) array. It recorded the imaginary part'...
+    ' of Fai6 of every particle in ench frame'],...
+    'variable3',...
+    ['[FaiR] is 100x(frame number) array. It recorded the magnitude'...
+    ' of Fai6 of every particle in ench frame']);
+save([FilePath 'ref/' num2str(wind(iwind)) '/Fai6.mat'],'Fai*','description');
+    %}
+end

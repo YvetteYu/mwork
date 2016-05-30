@@ -1,0 +1,34 @@
+clc;clear all;close all;
+ExpName='dimer_exp8';
+AFile=['J:\Granule\' ExpName '\'];
+BFile=['J:\Granule\' ExpName '\'];
+load([AFile 'ref\exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+iwind=1%:length(wind)
+%% load old and new data respecitively
+load([AFile 'CM\' num2str(wind(iwind)) '\00001.mat'],'X','Y');
+x1scale=size(Exp_info.roi,1);y1scale=size(Exp_info.roi,2);
+clear Exp_info
+
+load([BFile 'ref\' num2str(wind(iwind)) '\tra.mat'],'BX','BY');
+load([BFile 'exp_parameter.mat'],'Exp_info');
+x2scale=size(Exp_info.roi,1);y2scale=size(Exp_info.roi,2);
+Xtarget=BX(1,:)*x1scale/x2scale;
+Ytarget=BY(1,:)*y1scale/y2scale;
+clear BX BY
+Xtemp=zeros(1,100);Ytemp=zeros(1,100);
+figure('visible','off')
+for k=1:Exp_info.Pnumber
+    [distance]=mydistance(Xtarget(k),Ytarget(k),X,Y);
+    [value index]=min(distance);
+    Xtemp(k)=X(index);
+    Ytemp(k)=Y(index);
+    X(index)=0;
+    Y(index)=0;
+plot(Xtarget(k),Ytarget(k),'ro','MarkerFaceColor','r','MarkerSize',10)
+hold on
+plot(Xtemp(k),Ytemp(k)),'bx','MarkerSize',10,'LineWidth',5)
+hold on
+end
+print(gcf,'-dpng','-r100',[AFile 'test.png']);
+

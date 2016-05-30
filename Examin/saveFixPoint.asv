@@ -1,0 +1,21 @@
+clc;clear all;close all
+ExpName='dimer_exp19';
+load(['J:\Granule\' ExpName '\ref\exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+for iwind=1:length(wind)
+OriginalFile =[ 'J:\Granule\OriginalData\' ExpName '\pic\' wind '\'];
+File = ['J:\Granule\' ExpName '\ref\' wind '\'];
+OriImg=imread([OriginalFile '00001.png']);
+%% click
+figure
+imshow(OriImg);hold on
+tempfix=ginput(7);
+fixX=tempfix(:,1);
+fixY=tempfix(:,2);
+for n=1:size(tempfix,1)
+    plot(fixX(n),fixY(n),'r^','MarkerFaceColor','r')
+end
+pause;clf;
+%%
+save([File 'fixpoint.mat'],'fixX','fixY')
+end

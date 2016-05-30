@@ -1,0 +1,25 @@
+clc;clear all;close all;
+File='C:\Users\user\GoogleDrive\thesis\apparatus\Boundary\';
+filenum=dir([File '*.txt']);
+imarker=['o' 'o' '+' '^' '^' '*'];
+icolor=[1 0.2 0.8; 0.4 0.4 0.4; 1 0.6 0; 0 0.4 0.8; 1 0.2 0.2; 0.4 0.7 0.7];
+for ifile=1:4%length(filenum)
+    Bext=textread([ File num2str(ifile) '.txt'],'%f');
+    dis=(0:length(Bext)-1)/14.5;
+    if ifile==2 || ifile==5
+        plot(dis,Bext,'Marker',imarker(ifile),'Color',icolor(ifile,:),...
+            'MarkerFaceColor',icolor(ifile,:),'LineStyle','none',...
+            'MarkerSize',5);
+    else
+        plot(dis,Bext,'Marker',imarker(ifile),'Color',icolor(ifile,:),...
+            'LineStyle','none','LineWidth',2,'MarkerSize',5);
+    end
+    hold on
+    clear Bext
+end
+set(gcf,'Paperunits','centimeters','PaperPosition',[0 0 14 10]);
+xlabel('Distance from venter (R) ','fontsize',12);
+ylabel('Bext (Gauss) ','fontsize',12);
+saveas(gcf,[File 'Bext.fig']);
+print(gcf,'-dpng', '-r300', [File 'Bext.png']);
+print(gcf,'-depsc','-tiff','-r300', [File 'Bext.eps']);

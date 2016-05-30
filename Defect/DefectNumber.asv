@@ -1,0 +1,65 @@
+% Calculate defect number
+clc;clear all;close all;
+ExpName='monomer_exp3';
+Located=['J:\Granule\' ExpName '\'];
+FilePath=[Located 'triangular\LatticeLine\'];
+load([Located 'exp_parameter.mat'],'Exp_info');
+str=180;
+particleNo=1:Exp_info.Pnumber;
+%%
+for n=1:length(str)
+    %inputnum=str(n);
+    %particleNo=1:inputnum;
+    mfile=dir([FilePath num2str(str(n)) '\*.mat']);
+    th5=zeros(1,length(mfile));
+    th7=zeros(1,length(mfile));
+    defect5=zeros(length(mfile),70);
+    defect7=zeros(length(mfile),70);
+    
+    for frame=108%1:length(mfile)
+        load([FilePath num2str(str(n)) '\' mfile(frame).name],'Tripair');
+         % This program was modified on middle April.
+        NBNum=zeros(1,Exp_info.Pnumber);
+         % NBNum is neighbor number.
+        tripairNum=length(Tripair);
+        neibor=zeros(Exp_info.Pnumber,12);
+    
+         for par=1:Exp_info.Pnumber
+            
+            check=find(Tripair(:,:)==par);
+             % one triangle was composed by 3 number.
+             % so one number exists in x triangles means it has x neighbors.
+            
+            NBNum(par)=length(check);
+             % so NBNum records every particle's neighbor number each frame.
+            
+            tempA=Tripair(check(check<=tripairNum)+tripairNum);
+             % tampA is par's array number.
+             % if the particle par's neibor is in first column.
+             % -> particle par is in second column.
+            tempB=Tripair(check(check>tripairNum)-tripairNum);
+             % if the particle par's neibor is in first column.
+             % -> particle par is in first column.
+            tempn=[tempA;tempB];
+            clear tempA tempB check
+            neibor(par,1:length(tempn))=tempn';
+             % neibor is array of (number of particle t's neibor)
+             % neibor arrange in particle number
+             % first row of neibor is number 1 particle's neibors.
+              
+        end
+        save([Located 'triangular\defect\' num2str(str(n)) '\' sprintf('%05d',frame) '.mat'],'NBNum','neibor');
+        th7(frame)=sum(NBNum==7);
+        th5(frame)=sum(NBNum==5);
+        tempdefect5=particleNo(NBNum==5); 
+        tempdefect7=particleNo(NBNum==7); 
+        defect5(frame,1:length(tempdefect5))=tempdefect5;
+        defect7(frame,1:length(tempdefect7))=tempdefect7;
+          % add these on June 1 2014.
+        clear temp* neibor NBNum
+    end
+    save([Located 'ref\' num2str(str(n)) '\DefectNum.mat'],'th5','th7','defect5','defect7');
+    clear th* defect  
+end
+%exit;
+

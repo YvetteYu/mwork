@@ -1,0 +1,53 @@
+clc;clear all;close all;
+ExpName='monomer_exp710';
+FilePath=['J:/Granule/' ExpName '/'];
+Located=[FilePath '/Fai6/'];
+load([FilePath 'ref/exp_parameter.mat'],'Exp_info');
+wind=Exp_info.Number;
+pnumber=Exp_info.Pnumber;
+interval=3;
+framerate=30;
+w=Exp_info.width; h=Exp_info.height;
+centerX=Exp_info.BCenter(1); centerY=Exp_info.BCenter(2); 
+Radius=Exp_info.BRadius;
+clear Exp_info
+%%
+figure('visible','off')
+for iwind=2:length(wind)
+    load([FilePath 'ref/' num2str(wind(iwind)) '\tra.mat'],'B*');
+    load([FilePath 'ref/' num2str(wind(iwind)) '\Fai6.mat'],'FaiR');
+    framenum=size(BX,1);  
+    for iframe=1:interval:framenum
+        X=BX(iframe,:);
+        Y=BY(iframe,:);
+        rcolor=FaiR(iframe,:);
+        bcolor=1-FaiR(iframe,:);
+        
+        %% plot the lattice line 
+        dt = DelaunayTri(X',Y');
+        triplot(dt,'LineStyle','-','LineWidth',1,'Color',[180/255 180/255 180/255]);
+       
+        %% plot the  circlar boundary
+        myp_CircularBon(centerX,centerY,Radius);   
+        
+        %% plot the fai6 on the position of particles
+        for ipar=1:pnumber
+            plot(X(ipar),Y(ipar),'Marker','O','MarkerSize',15,...
+                'Color',[rcolor(ipar) 0 bcolor(ipar)],...
+                'MarkerFaceColor',[rcolor(ipar) 0 bcolor(ipar)]);
+            hold on
+        end
+        
+        %% set the axis
+        axis off; daspect([1 1 1]);
+        set(gca,'xlim',[0 w],'ylim',[0 h])
+        set(gca,'YDir','reverse');%,'XTick',[],'YTick',[],'TickLength',[0 0]);
+        time=sprintf('%2.3f',(iframe-1)/framerate);
+        text(w-40,h-10,time,'FontSize',14);
+        imgnum=(iframe-1)/interval+1;
+        imgname=sprintf('%05d',imgnum);
+        print(gcf,'-dpng','-r100',[Located num2str(wind(iwind)) '/' imgname '.png']);
+        clf
+    end
+end
+exit

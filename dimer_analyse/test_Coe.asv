@@ -1,0 +1,25 @@
+% DC for continuous variation of wind
+clc;clear all;close all;
+ExpName='monomer_exp710';
+File = ['J:/Granule/' ExpName '/ref/'];
+load([File 'Exp_parameter.mat'],'Exp_info');
+ExpNum=9:10;
+head=1:100*30:701*30;
+tail=[101:100:701 810]*30;
+scale=Exp_info.scale;
+%%
+for iExpNum=1:length(ExpNum)
+    load([File num2str(ExpNum(iExpNum)) '/tra.mat']); 
+    for iwind=1:length(head)
+        timescale=round((tail(iwind)-head(iwind))/2)*30;
+        MeanSD=zeros(timescale,Exp_info.Pnumber);
+    %% displacement and angular difussion
+    for DeltaT=1:timescale
+        displx=(BX(DeltaT+head(iwind):1:tail(iwind),:)-BX(head(iwind):1:tail(iwind)-DeltaT,:))*scale/14;
+        disply=(BY(DeltaT+head(iwind):1:tail(iwind),:)-BY(head(iwind):1:tail(iwind)-DeltaT,:))*scale/14;
+        MeanSD(DeltaT,:)=mean(displx.^2+disply.^2);
+    end
+    AvgMSD=mean(MeanSD');
+    save([File num2str(ExpNum(iExpNum)) '/DiffusionCoe_' num2str(iwind) '.mat'],'MeanSD','AvgMSD');
+    end
+end

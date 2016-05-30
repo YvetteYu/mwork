@@ -1,0 +1,31 @@
+% plot DC with defferent wind strngth in one picture.
+clc;clear all;close all;
+ExpName='monomer_exp11';
+Located=['C:/Users/user/GoogleDrive/Exp/' ExpName '/Datanalysis/DC/'];
+ProcessFile = ['C:/Users/user/GoogleDrive/Exp/' ExpName '/ref/'];
+load([ProcessFile 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+ylimbottom=10;
+ylimtop=10^1.6;
+startframe=151;
+endframe=151;
+%%
+figure
+for iwind=8:9%length(wind)
+    icolor=iwind/length(wind)-0.025;
+    load([ProcessFile num2str(wind(iwind)) '/SBDiffusionCoe.mat'],'AvgSubMSD');
+    AvgSubMSD(isnan(AvgSubMSD))=[];
+    time=(0:(length(AvgSubMSD)-1))/30;
+    loglog(time(startframe:endframe),AvgSubMSD(startframe:endframe),'Color',[icolor 0.5 1-icolor],'Marker','o',...
+        'MarkerSize',3,'MarkerFaceColor',[icolor 0.5 1-icolor]);
+    hold on
+end
+%%
+set(gcf,'Paperunits','centimeters','PaperPosition',[0 0 8 6]);
+set(gca,'FontSize',14); box on;
+set(gca,'xlim',[0 5],'ylim',[ylimbottom ylimtop]);
+set(gca,'YTick',10:5:40,'XTick',0:1:5);
+saveas(gcf,[Located 'sub_MSD2.fig']);
+print(gcf,'-dpng', '-r300', [Located 'sub_MSD2.png']);
+print(gcf,'-depsc','-tiff','-r300', [Located 'sub_MSD2.eps']);
+  %} 

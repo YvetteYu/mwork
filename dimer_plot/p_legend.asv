@@ -1,0 +1,32 @@
+clc;clear all;close all;
+ExpName='dimer_exp19';
+File = ['C:/Users/user/GoogleDrive/HexagonBoundary/' ExpName '/ref/'];
+Located=['C:/Users/user/GoogleDrive/HexagonBoundary/' ExpName '/Datanalysis/S/'];
+load([File 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+%%
+for iwind=1:length(wind)
+   
+             plot(1,iwind,'Marker','o','MarkerSize',5,'Color',[1 0.2 0.8],...
+        'MarkerFaceColor',[1 0.2 0.8]);
+    hold on
+     plot(2,iwind,'Marker','o','MarkerSize',5,'Color',[0.4 0.4 0.4],...
+        'MarkerFaceColor',[0.4 0.4 0.4]);
+       plot(1,iwind,'Marker','o','MarkerSize',5,'Color',[1 0.6 0],...
+        'MarkerFaceColor',[1 0.6 0]);
+    hold on
+     plot(2,iwind,'Marker','o','MarkerSize',5,'Color',[0 0.4 0.8],...
+        'MarkerFaceColor',[0 0.4 0.8]);
+          plot(1,iwind,'Marker','o','MarkerSize',5,'Color',[1 0.2 0.2],...
+        'MarkerFaceColor',[1 0.2 0.2]);
+    hold on
+     plot(2,iwind,'Marker','o','MarkerSize',5,'Color',[0.4 0.7 0.7],...
+        'MarkerFaceColor',[0.4 0.7 0.7]);
+    hold on
+end
+set(gcf,'Paperunits','centimeters','PaperPosition',[0 0 14 10]);
+set(gca,'FontSize',12);
+hl=legend('Location','bestoutside');
+set(hl,'Box','off');
+print(gcf,'-dtiff', '-r500', [Located 'LG.tiff']);
+

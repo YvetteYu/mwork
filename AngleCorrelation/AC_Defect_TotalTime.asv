@@ -1,0 +1,41 @@
+% Ndefect and AC - total exp time 
+clc; clear all; close all;
+ExpName='dimer_exp7';
+skip=10;
+FilePath=['J:\Granule\' ExpName '\ref\'];
+Located=['C:\Users\user\Dropbox\Exp\' ExpName '\Datanalysis\'];
+load([FilePath 'AvgDefect.mat'],'Exp_info');
+wind=Exp_info.wind;
+frame=zeros(1,length(wind));
+load([FilePath num2str(wind(1)) '\DefectNum.mat'],'th5');
+framenum=length(th5)*length(wind)/skip;
+defect5=zeros(1,framenum);
+AC=zeros(1,framenum);
+time=zeros(1,framenum);
+clear framenum th5
+figure
+for iwind=1:3%length(wind)
+    windcolor=hsv2rgb([iwind*230/(360*length(wind)) 0.8 0.9]);
+    load([FilePath num2str(wind(1)) '\DefectNum.mat'],'th5');
+    load([FilePath num2str(wind(iwind)) '\AvgAC.mat'],'AvgAC');
+    if iwind==1
+        frame(iwind+1)=length(th5);
+    else
+        frame(iwind+1)=frame(iwind)+length(th5);
+    end
+    head=frame(iwind)/skip+1
+    tail=frame(iwind+1)/skip
+    defect5(head:tail)=th5(1:skip:end);
+    AC(head:tail)=AvgAC(1:skip:end);  
+    temptime=(frame(iwind)+1:frame(iwind+1))/30;
+    time(head:tail)=temptime(1:skip:end);
+    clear temptime AvgAC th5
+end
+%plotyy(time,defect5,time,AC);
+%hold on
+%set(gca,'FontSize',20);
+%title('Defect-Total Exp Time','fontsize',24,'fontweight','b');
+%xlabel('time(s) ','fontsize',20);
+%ylabel('Defect Number ','fontsize',20);
+%saveas(gcf,[Located 'AC_Defect_TotalTime.fig']);
+%print(gcf,'-dpng', '-r200', [Located 'AC_Defect_TotalTime.png']);

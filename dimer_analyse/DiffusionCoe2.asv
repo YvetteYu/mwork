@@ -1,0 +1,32 @@
+clc;clear all;close all;
+ExpName='monomer_exp11';
+File=['J:\Granule\' ExpName '\'];
+load([File 'ref\exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+scale=Exp_info.scale;
+load([File 'ref\' num2str(wind(18)) '\SBtra.mat'],'DX','DY','extraP');
+clear Exp_info
+%%
+MeanSqrSubD=zeros(extraP,size(DX,2)*4/5);
+for ipar=1:extraP
+X=nonzeros(DX(ipar,:))';
+Y=nonzeros(DY(ipar,:))';
+timescale=round(length(X)*4/5);
+%%
+for DeltaT=1:timescale
+    tempx=(X(DeltaT+1:1:end)-X(1:1:end-DeltaT))*scale;
+    tempy=(Y(DeltaT+1:1:end)-Y(1:1:end-DeltaT))*scale;
+    MeanSqrSubD(ipar,DeltaT)=mean(tempx.^2+tempy.^2);
+end
+clear X Y timescale
+end
+clear D*
+AvgSubMSD=zeros(1,size(MeanSqrSubD,2));
+iDeltaT=1;
+while isempty(nonzeros(MeanSqrSubD(:,iDeltaT)))==0
+AvgSubMSD(iDeltaT)=mean(nonzeros(MeanSqrSubD(:,iDeltaT)));
+iDeltaT=iDeltaT+1;
+end
+AvgSubMSD=nonzeros(AvgSubMSD)';
+
+save([File 'ref\' num2str(wind(18)) '\SBDiffusionCoe.mat'],'MeanSqrSubD');%,'AvgSubMSD');

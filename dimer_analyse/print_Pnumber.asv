@@ -1,0 +1,14 @@
+% output pic with assigning a number and mark * with some specify particles
+% to check the tracing is correct.
+clear all;close all;clc
+ExpNmae='monomer_exp11';
+Located=['C:/Users/user/GoogleDrive/' ExpName '/Datanalysis/trajectory/'];
+File = ['J:/Granule/' ExpName '/ref/'];
+load([File 'exp_parameter.mat'],'Exp_info');
+wind='180';
+frame=1;
+load([File wind '/tra.mat'],'BX','BY');)
+for ipar=1:Exp_info.Pnumber
+    ParticleNo=sprintf('%d',ipar);
+    text(BX(frame,ipar)+1,BY(frame,ipar)+1,ParticleNo);
+end

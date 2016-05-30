@@ -1,0 +1,36 @@
+% 4.save average KE of total particle of each frame and Vx (each frame and
+% each particle) and Vy. and all of they are real scale (mm)
+clc;clear all;close all;
+ExpName='monomer_exp6';
+list=4;
+framerate=30;
+load(['J:\Granule\' ExpName '\exp_parameter.mat'],'Exp_info');
+scale=Exp_info.scale;
+for t=1%:length(list)
+    %switch (list(t))
+     %   case {130, 140}
+     %   load(['J:\Granule\' exp '\exp_parameter.mat'],'scale');
+     %   otherwise
+     %      load(['J:\Granule\' exp '\exp_parameter2.mat'],'scale');
+   % end
+    %----------------------------------------------------------------------
+    ProcessFile = ['J:\Granule\' ExpName '\ref\' num2str(list(t)) '\'];
+    % after processing, the data will be saved here.
+    load([ProcessFile 'tra.mat'],'BX','BY');
+    % at B(time,Pi)
+    %--------------------------------------------------------------------------
+    
+    %%
+    Vx=(BX(2:end,:)-BX(1:(end-1),:))*framerate*scale;
+    Vy=(BY(2:end,:)-BY(1:(end-1),:))*framerate*scale;
+    % V*scale=real unit scale
+    clear B*
+    %%
+    MSVx=mean((Vx).^2,2)';
+    MSVy=mean((Vy).^2,2)';
+    description=struct('variable1',...
+        '[V*] is velocity of every particle in each frame, the number is...
+    ' scaled as real '
+    save([ProcessFile 'velocity.mat'],'Vx','Vy','MSV*');
+    clear *V*
+end

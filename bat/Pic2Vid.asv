@@ -1,0 +1,15 @@
+clear all; close all; clc;
+exp='dimer_exp6';
+File=['J:\Granule\' exp '\color\' ]; 
+fp=fopen([ File 'Pic2Video.txt'],'w');    
+wind=[185:5:230];
+
+    %%
+    for  w=1:length(wind)
+        fprintf(fp,'cd %d\\\r\n',wind(w));
+    fprintf(fp,'ffmpeg -f image2 -r 3 -i %%%%05d.png -vcodec h264 triangular%d.mp4\r\n'...
+        ,wind(w));
+    fprintf(fp,'cd ..\r\n');
+    end
+    fclose(fp);
+

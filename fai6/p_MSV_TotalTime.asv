@@ -1,0 +1,30 @@
+% plot <v^2> vesus time
+clc;clear all;close all;
+ExpName='TestExp/exp3';
+Located=['C:/Users/user/GoogleDrive/Exp/' ExpName '/Datanalysis/'];
+ProcessFile = ['J:/Granule/' ExpName '/'];
+load([ProcessFile 'ref/exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+span=9;time=0;
+figure
+%%
+for iwind=1:length(wind)
+    load([ProcessFile 'ref/' num2str(wind(iwind)) '/Fai6.mat'],'FaiR');
+    icolor=[0.2 0.5 0.9;0.9 0.5 0.2];
+    AvgFaiR=mean(FaiR,2);
+    smFaiR=smooth(AvgFaiR,span);
+    clear AvgFaiR FaiR
+    time=time(end)+(0:(length(smFaiR)-1))/30;
+    plot(time,smFaiR,'Color',color(iwind,:),'LineWidth',1);   
+    hold on
+end
+box on;
+text(20,ythresh-10,ExpName,'FontSize',14,'Color','k');
+set(gca,'FontSize',16);
+set(gcf,'PaperPosition',Newfiguresize);
+set(gca,'xlim',[0 time(end)],'ylim',[0 ythresh]);
+title(' <v^2> - time','fontsize',24,'fontweight','b');
+xlabel('Time(s) ','fontsize',20);
+ylabel('MSV (mm/s)^2 ','fontsize',20);
+saveas(gcf,[Located 'Fai6.fig']);
+print(gcf,'-dpng', '-r200', [Located 'MSV/MSV.png']);

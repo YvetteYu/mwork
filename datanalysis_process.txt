@@ -1,0 +1,35 @@
+ Tracking Particles
+Track_MutilParticlesV2  > Script_Template2.m
+Examin > Single_pic     > GrabCM.m
+Track_MutilParticlesV2  > main.m
+dimer_analysis 		> trajectory.m
+%                       > Eliminate_FixPoint.m
+ 			> check_trajectory2.m
+*			> connect_particles.m
+*			> chain_angle.m
+			> Velocity.m
+			> DiffusionCoe.m
+*			> DiffusionCoe_angle.m
+------------------------------------------------
+Delaunary
+ 1.triangular       > lattice_length.m
+ 2. Defect          > DefectNumber.m
+*3.AngleCorrelation > angle_correlation2.m
+*4.                 > AvgAcorre.m
+ 5.triangular       > TriAngle.m
+ 6.Boundary         > FrameBoundary2.m
+ 7.                 > BoundaryDefect3.m
+------------------------------------------------
+Fai6
+fai6 > fai6_calculate.m
+------------------------------------------------
+Lindemann Parameter
+fai6 > NearstNeibor.m
+fai6 > LindemannP2.m (P3 version is for remove boundary particles)
+------------------------------------------------
+Sub Diffusion
+dimer_analysis 	> SuBoundary.m
+		> SBtra.m
+		> DiffusionCoe2.m
+------------------------------------------------ 
+* is for dimer

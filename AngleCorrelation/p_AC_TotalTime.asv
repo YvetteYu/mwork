@@ -1,0 +1,32 @@
+% plot AC - total time 
+clc; clear all; close all;
+ExpName='TestExp/exp3';
+FilePath=['J:/Granule/' ExpName '/ref/'];
+Located=['C:/Users/user/Dropbox/Exp/' ExpName '/Datanalysis/'];
+load([FilePath 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+frame=zeros(1,length(wind));
+figure
+for iwind=1:length(wind)
+    windcolor=[0.5 0.9 0.2;0.2 0.6 0.9];
+    index=rem(iwind,2)
+    load([FilePath num2str(wind(iwind)) '/AvgAC.mat'],'AvgAC');
+    if iwind==1
+        frame(iwind+1)=length(AvgAC);
+         % Because the time start from 0.
+    else
+        frame(iwind+1)=frame(iwind)+length(AvgAC);
+    end
+    temptime=[frame(iwind):frame(iwind+1)-1];
+    temptime=temptime/30;
+    time=temptime(1:10:end);
+    AC=AvgAC(1:10:end);
+    plot(time,AC,'Color',windcolor);
+    hold on
+end
+set(gca,'FontSize',20);
+title('Angle Correlation','fontsize',24,'fontweight','b');
+xlabel('time(s) ','fontsize',20);
+saveas(gcf,[Located 'Acorre/AC_TotalTime.fig']);
+print(gcf,'-dpng', '-r200', [Located 'Acorre/AC_TotalTime.png']);
+clear defect* temp*

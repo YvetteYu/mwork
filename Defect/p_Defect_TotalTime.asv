@@ -1,0 +1,33 @@
+% plot defect number - total exp time 
+clc; clear all; close all;
+ExpName='dimer_exp7';
+FilePath=['J:\Granule\' ExpName '\ref\'];
+Located=['C:\Users\user\Dropbox\Exp\' ExpName '\Datanalysis\'];
+load([FilePath 'AvgDefect.mat'],'Exp_info');
+wind=Exp_info.wind;
+frame=zeros(1,length(wind));
+
+figure
+for iwind=1:length(wind)
+    remainder=rem(iwind,2)+1;
+    load([FilePath num2str(wind(iwind)) '\DefectNum.mat'],'th5','th7');
+    if iwind==1
+        frame(iwind+1)=length(th5);
+    else
+        frame(iwind+1)=frame(iwind)+length(th5);
+    end
+    temptime=[frame(iwind)+1:frame(iwind+1)];
+    temptime=temptime/30;
+    time=temptime(1:10:end);
+    defect7=th7(1:10:end);
+    defect5=th5(1:10:end); 
+    plot(time,defect5,'Color',windcolor(remainder,:));
+    hold on
+end
+set(gca,'FontSize',20);
+%legend('th7','th5')
+title('Defect-Total Exp Time','fontsize',24,'fontweight','b');
+xlabel('time(s) ','fontsize',20);
+ylabel('Defect Number ','fontsize',20);
+saveas(gcf,[Located 'Defect_TotalTime.fig']);
+print(gcf,'-dpng', '-r200', [Located 'Defect_TotalTime.png']);

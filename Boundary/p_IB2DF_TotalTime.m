@@ -1,0 +1,50 @@
+% plot total Ndefect - B1 
+clc; clear all; close all;
+ExpName='dimer_exp3';
+FilePath=['J:\Granule\' ExpName '\ref\'];
+Located=['C:\Users\user\Dropbox\Exp\' ExpName '\Datanalysis\'];
+load([FilePath 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+frame=zeros(1,length(wind));
+h1=figure(1);
+h2=figure(2);
+for iwind=1:length(wind)
+    wind5color=hsv2rgb([iwind*230/(360*length(wind)) 0.8 0.9]);
+    wind7color=hsv2rgb([iwind*230/(360*length(wind)) 0.5 0.6]); 
+    load([FilePath num2str(wind(iwind)) '\Bdefect.mat'],'NumB*DF*');
+    load([FilePath num2str(wind(iwind)) '\DefectNum.mat'],'th*');
+    if iwind==1
+        frame(iwind+1)=length(NumB1DF5);
+         % Because the time start from 0.
+    else
+        frame(iwind+1)=frame(iwind)+length(NumB1DF5);
+    end
+   Inner5=th5-NumB1DF5;
+   Inner7=th7-NumB1DF7;
+   temptime=[frame(iwind):frame(iwind+1)-1];
+   temptime=temptime/30;
+   time=temptime(1:10:end);
+   defect5=Inner5(1:10:end);
+   defect7=Inner7(1:10:end);
+   figure(h1)
+   plot(time,defect5,'Color',wind5color);
+   hold on
+   figure(h2)
+   plot(time,defect7,'Color',wind7color);
+   hold on     
+end
+figure(h1)
+set(gca,'FontSize',20);
+title('5th Defects on inner reigon + B2','fontsize',24,'fontweight','b');
+xlabel('time(s) ','fontsize',20);
+ylabel('Defect Number ','fontsize',20);
+saveas(gcf,[Located 'I5B2DF_TotalTime.fig']);
+print(gcf,'-dpng', '-r200', [Located 'I5B2DF_TotalTime.png']);
+
+figure(h2)
+set(gca,'FontSize',20);
+title('7th Defects on inner reigon + B2','fontsize',24,'fontweight','b');
+xlabel('time(s) ','fontsize',20);
+ylabel('Defect Number ','fontsize',20);
+saveas(gcf,[Located 'I7B2DF_TotalTime.fig']);
+print(gcf,'-dpng', '-r200', [Located 'I7B2DF_TotalTime.png']);

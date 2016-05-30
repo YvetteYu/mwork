@@ -1,0 +1,35 @@
+clc;clear all;close all;
+ExpName='monomer_exp3';
+FilePath=['J:/Granule/' ExpName '/'];
+Located=['C:/Users/user/Dropbox/Exp/' ExpName '/Datanalysis/Lindemann/'];
+load([FilePath 'exp_parameter.mat'],'Exp_info');
+pnumber=Exp_info.Pnumber;
+wind=Exp_info.wind;
+
+%%
+for iwind=4:9
+    icolor=iwind/length(wind)-0.035;
+    load([FilePath 'ref/' num2str(wind(iwind)) '/InnerLparameter.mat'],'InnerL');
+    load([FilePath 'ref/' num2str(wind(iwind)) '/Lindemannp2.mat'],'lindpara');
+    
+    time=0:(length(InnerL)-1);
+    time=time(1:10:end)/30;
+    tempara=lindpara(1:10:end);
+    tempIL=InnerL(1:10:end);
+    loglog(time,tempara,'Color',[icolor 0.5 1-icolor],'Marker','o',...
+        'MarkerSize',3,'MarkerFaceColor',[icolor 0.5 1-icolor])  
+    hold on
+    loglog(time,tempIL,'Color','k','Marker','^',...
+        'MarkerSize',3);
+    
+    set(gca,'ylim',[0.1 100000])
+    set(gca,'FontSize',18);
+    title('Lindemann Parameter ','fontsize',24,'fontweight','b');
+    xlabel('Time (s) ','fontsize',20);
+    ylabel('r_{L}(t) ','fontsize',20);
+    
+    print(gcf,'-dpng', '-r300', [Located 'InnerL_' num2str(wind(iwind)) '.png']);
+    %saveas(gcf,[Located 'Lindemann2.fig']);
+    clf;clear InnerL lindpara
+end
+

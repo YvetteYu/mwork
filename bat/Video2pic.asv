@@ -1,0 +1,16 @@
+clear all; close all; clc;
+exp='dimer_exp6';
+File=['J:\Granule\OriginalData\' exp '\s\' ]; 
+fp=fopen([ File 'sVideo2pic.txt'],'w');    
+BeginVid=135;
+interval=5;
+VidNum=dir([File 's*.MTS']);
+    %%
+    for  wind=1:length(VidNum)
+        
+        fprintf(fp,['ffmpeg -i %s -filter:v yadif crop=972:972:480:48 '...
+            '-s 324x324 -ss 00:00:02 -r 30 -t 00:10:00 -y ..\\s_pic'...
+            '%d\\%%%%05d.png\r\n',VidNum(wind));
+    end
+    fclose(fp);
+

@@ -1,0 +1,27 @@
+function [Rcolor Gcolor Bcolor]=myangle2color(Tangle)
+
+if Tangle<90 && Tangle>=0
+        Rcolor=1;
+        Gcolor=Tangle/60;
+        Bcolor=1-Tangle/60;
+else
+        Rcolor=(Tangle-120)/60;
+        Gcolor=1-(Tangle-120)/60;
+        Bcolor=1;
+end
+%{
+if Tangle<60 && Tangle>=0
+        Rcolor=1;
+        Gcolor=Tangle/60;
+        Bcolor=1-Tangle/60;
+    elseif Tangle>=60 && Tangle<=120
+        Rcolor=1-(Tangle-60)/60;
+        Gcolor=1;
+        Bcolor=(Tangle-60)/60;
+    else
+        Rcolor=(Tangle-120)/60;
+        Gcolor=1-(Tangle-120)/60;
+        Bcolor=1;
+end
+%}
+end

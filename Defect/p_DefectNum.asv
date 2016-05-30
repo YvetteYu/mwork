@@ -1,0 +1,22 @@
+% plot defect fraction 
+clc;clear all;close all;
+ExpName='monomer_exp11';
+File=[ 'J:/Granule/' ExpName '/ref/'];
+Located=['C:/Users/user/GoogleDrive/Exp/' ExpName '/Datanalysis']
+load([File 'exp_parameter.mat'],'Exp_info');
+wind=Exp_info.wind;
+span=1;
+for iwind=10%1:length(wind)
+    load([File num2str(wind(iwind)) '/DefectNum.mat'],'th*');
+    load([File num2str(wind(iwind)) '/Bdefect.mat'],'NumB1*');
+    DFraction=(th5+th7-NumB1DF5-NumB1DF7)/Exp_info.Pnumber;
+end
+%%
+smDFraction=smooth(DFraction,span);
+plot(smDFraction,'b.','LineStyle','none')
+set(gca,'FontSize',16)
+xlabel('Time(s) ','fontsize',20);
+ylabel('Defect Fraction ','fontsize',20);
+saveas(gcf,[File 'DFraction.fig']);
+print(gcf,'-dpng', '-r200', [File 'DFraction.png']);
+ %}
